@@ -1,0 +1,18 @@
+<resources>
+    <style name="TextViewName">
+        <item name="android:textColor">?colorOnBackground</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextViewCategory">
+        <item name="android:textColor">?colorOnBackground</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextViewAddress">
+        <item name="android:textColor">?colorOnBackground</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">iAmHungry</string>
+    <string name="map_title">Map</string>
+
+    <string name="network_error">Please connect to network and try again</string>
+    <string name="general_error">Something went wrong</string>
+</resources>
