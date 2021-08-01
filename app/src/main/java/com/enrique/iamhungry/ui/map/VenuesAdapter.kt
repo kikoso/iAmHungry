@@ -7,7 +7,8 @@ import com.enrique.iamhungry.databinding.VenueItemBinding
 import com.enrique.iamhungry.model.venue.view.VenueView
 import com.squareup.picasso.Picasso
 
-class VenuesAdapter : RecyclerView.Adapter<ViewHolder>() {
+class VenuesAdapter(private val onVenueSelected: (venue: VenueView) -> Unit) :
+    RecyclerView.Adapter<ViewHolder>() {
 
     var venues = mutableListOf<VenueView>()
 
@@ -17,7 +18,7 @@ class VenuesAdapter : RecyclerView.Adapter<ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(venues[position])
+        holder.bind(venues[position], onVenueSelected)
     }
 
     override fun getItemCount(): Int = venues.size
@@ -27,12 +28,16 @@ class VenuesAdapter : RecyclerView.Adapter<ViewHolder>() {
 class ViewHolder(private val binding: VenueItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(data: VenueView) {
+    fun bind(data: VenueView,  onVenueSelected: (venue: VenueView) -> Unit) {
         binding.name.text = data.name
         binding.category.text = data.category.get(0).name
         binding.address.text = data.location.address
         if (data.pictureUrl.isNotEmpty()) {
             Picasso.get().load(data.pictureUrl).into(binding.image)
+        }
+
+        binding.root.setOnClickListener {
+            onVenueSelected(data)
         }
     }
 }

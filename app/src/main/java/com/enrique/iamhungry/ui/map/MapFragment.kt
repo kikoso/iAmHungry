@@ -11,17 +11,23 @@ import com.enrique.iamhungry.R
 import com.enrique.iamhungry.databinding.FragmentMapBinding
 import com.enrique.iamhungry.model.venue.view.VenueView
 import com.enrique.iamhungry.utils.viewBinding
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private val binding by viewBinding(FragmentMapBinding::bind)
     private val viewModel: MapViewModel by viewModels()
-    private var adapter = VenuesAdapter()
+    private var adapter = VenuesAdapter(::onVenueClicked)
+
+    private fun onVenueClicked(venue: VenueView) {
+        map?.clear()
+        viewModel.onVenueSelected(venue)
+    }
+
+    private var map: GoogleMap? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -29,7 +35,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
-        binding.venuesRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        binding.venuesRecyclerView.layoutManager =
+            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding.venuesRecyclerView.adapter = adapter
 
         setUpVenuesListener()
@@ -44,6 +51,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         viewModel.venueList.observe(
             viewLifecycleOwner, {
                 renderVenueList(it)
+            }
+        )
+        viewModel.venueDetails.observe(
+            viewLifecycleOwner, {
+                renderVenueDetails(it)
             }
         )
         viewModel.networkError.observe(
@@ -61,6 +73,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                 renderGeneralError(it)
             }
         )
+    }
+
+    private fun renderVenueDetails(venue: VenueView) {
+        binding.centerLocationMarker.visibility = View.GONE
+        addCurrentVenueMarker(venue)
+    }
+
+    private fun addCurrentVenueMarker(venue: VenueView) {
+        map?.addMarker(
+            MarkerOptions().position(venue.getLatLng())
+        )
+
+        map?.animateCamera(CameraUpdateFactory.newLatLng(venue.getLatLng()))
     }
 
     private fun renderLoadingState(loading: Boolean) {
@@ -105,9 +130,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     }
 
     override fun onMapReady(map: GoogleMap) {
-       map.setOnCameraIdleListener {
-           val latLng: LatLng = map.cameraPosition.target
-            viewModel.getVenues(latLng.latitude.toString() +","+ latLng.longitude.toString() )
-       }
+        this.map = map
+        map.setOnCameraIdleListener {
+            val latLng: LatLng = map.cameraPosition.target
+            viewModel.getVenues(latLng.latitude.toString() + "," + latLng.longitude.toString())
+        }
     }
 }

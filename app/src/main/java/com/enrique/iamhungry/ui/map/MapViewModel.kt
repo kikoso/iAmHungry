@@ -19,6 +19,9 @@ class MapViewModel @Inject constructor(private val getVenuesForLocationUseCase: 
     private val _venueList = MutableLiveData<MutableList<VenueView>>()
     val venueList: LiveData<MutableList<VenueView>> = _venueList
 
+    private val _venueDetails = MutableLiveData<VenueView>()
+    val venueDetails: LiveData<VenueView> = _venueDetails
+
     private val _loading = MutableLiveData<Boolean>()
     val loading = _loading
 
@@ -58,4 +61,7 @@ class MapViewModel @Inject constructor(private val getVenuesForLocationUseCase: 
         }
     }
 
+    fun onVenueSelected(venue: VenueView) {
+        _venueDetails.postValue(venue)
+    }
 }
