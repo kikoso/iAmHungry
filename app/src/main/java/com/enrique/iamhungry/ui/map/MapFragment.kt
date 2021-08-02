@@ -206,10 +206,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                 getLastKnownLocation()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                // In an educational UI, explain to the user why your app requires this
-                // permission for a specific feature to behave as expected. In this UI,
-                // include a "cancel" or "no thanks" button that allows the user to
-                // continue using your app without granting the permission.
+                //TODO: explain why we need this permission
 
             }
             else -> {
@@ -235,6 +232,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->
                     if (location != null) {
+                        map?.isMyLocationEnabled = true
                         map?.animateCamera(
                             CameraUpdateFactory.newLatLngZoom(
                                 LatLng(
@@ -246,6 +244,5 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                     }
                 }
         }
-
     }
 }
