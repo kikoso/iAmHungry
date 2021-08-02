@@ -1,5 +1,6 @@
 package com.enrique.iamhungry.di
 
+import com.enrique.iamhungry.core.NetworkHandler
 import com.enrique.iamhungry.network.FoursquareService
 import com.enrique.iamhungry.repository.VenueRepository
 import com.enrique.iamhungry.repository.VenueRepositoryImpl
@@ -16,9 +17,10 @@ object RepositoryModule {
 
     @Provides
     fun provideVenueRepository(
-        apiService: FoursquareService
+        apiService: FoursquareService,
+        networkHandler: NetworkHandler
     ): VenueRepository {
-        return VenueRepositoryImpl(apiService)
+        return VenueRepositoryImpl(apiService, networkHandler)
     }
 
     @Provides

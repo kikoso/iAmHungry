@@ -14,5 +14,4 @@ class NetworkHandler @Inject constructor(@ApplicationContext val context: Contex
         val networkInfo = connectivityManager.activeNetworkInfo
         return networkInfo!= null && networkInfo.isConnectedOrConnecting
     }
-
 }

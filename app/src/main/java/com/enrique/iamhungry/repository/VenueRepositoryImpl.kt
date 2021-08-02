@@ -1,6 +1,7 @@
 package com.enrique.iamhungry.repository
 
 import com.enrique.iamhungry.core.Failure
+import com.enrique.iamhungry.core.NetworkHandler
 import com.enrique.iamhungry.model.venue.domain.VenueDomain
 import com.enrique.iamhungry.network.FoursquareService
 import com.enrique.iamhungry.core.Result
@@ -13,47 +14,56 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class VenueRepositoryImpl @Inject constructor(
-    private val apiService: FoursquareService
+    private val apiService: FoursquareService,
+    private val networkHandler: NetworkHandler
 ) :
     VenueRepository {
 
     override suspend fun getVenueList(latLng: String): Result<List<VenueDomain>> {
         return withContext(Dispatchers.IO) {
-            val response = apiService.getVenues(latLng).execute()
-            when {
-                response.isSuccessful -> {
-                    response.body()?.let { getVenuesResponse ->
-                        val listVenuesDomain = mutableListOf<VenueDomain>()
-                        getVenuesResponse.response.venues.forEach {
-                            val venue = it.toVenueDomain()
+            if (networkHandler.isConnected()) {
+                val response = apiService.getVenues(latLng).execute()
+                when {
+                    response.isSuccessful -> {
+                        response.body()?.let { getVenuesResponse ->
+                            val listVenuesDomain = mutableListOf<VenueDomain>()
+                            getVenuesResponse.response.venues.forEach {
+                                val venue = it.toVenueDomain()
 
-                            when (val photoResult = getVenuePhoto(it)) {
-                                is Result.Success<String> -> venue.pictureUrl = photoResult.response
-                                is Result.Error -> print("Error")//
+                                when (val photoResult = getVenuePhoto(it)) {
+                                    is Result.Success<String> -> venue.pictureUrl = photoResult.response
+                                    is Result.Error -> print("Error")//
+                                }
+                                listVenuesDomain.add(venue)
                             }
-                            listVenuesDomain.add(venue)
-                        }
 
-                        return@withContext Result.Success(listVenuesDomain)
+                            return@withContext Result.Success(listVenuesDomain)
+                        }
+                        return@withContext Result.Success(emptyList())
                     }
-                    return@withContext Result.Success(emptyList())
+                    else -> return@withContext Result.Error(Failure.NetworkConnection)
                 }
-                else -> return@withContext Result.Error(Failure.NetworkConnection)
+            } else {
+                Result.Error(Failure.NetworkConnection)
             }
         }
     }
 
     private suspend fun getVenuePhoto(it: Venue): Result<String> {
         return withContext(Dispatchers.IO) {
-            val response = apiService.getPictureForVenue(it.id).execute()
-            when {
-                response.isSuccessful -> {
-                    response.body()?.let { getPictureForVenueResponse ->
-                        return@withContext Result.Success(getPictureForVenueResponse.getMainPictureForVenue())
+            if (networkHandler.isConnected()) {
+                val response = apiService.getPictureForVenue(it.id).execute()
+                when {
+                    response.isSuccessful -> {
+                        response.body()?.let { getPictureForVenueResponse ->
+                            return@withContext Result.Success(getPictureForVenueResponse.getMainPictureForVenue())
+                        }
+                        return@withContext Result.Success("")
                     }
-                    return@withContext Result.Success("")
+                    else -> return@withContext Result.Error(Failure.NetworkConnection)
                 }
-                else -> return@withContext Result.Error(Failure.NetworkConnection)
+            } else {
+                Result.Error(Failure.NetworkConnection)
             }
         }
     }
