@@ -117,11 +117,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         if (it == AppState.Exploration) {
             binding.venueDetails.visibility = View.VISIBLE
             binding.centerLocationMarker.visibility = View.GONE
-
         } else if (it == AppState.Navigation) {
             map?.clear()
             binding.venueDetails.visibility = View.GONE
             binding.centerLocationMarker.visibility = View.VISIBLE
+            moveMapToCurrentLocation()
         } else if (it == AppState.Finish) {
             requireActivity().finish()
         }
@@ -181,10 +181,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         this.map = map
         map.setOnCameraIdleListener {
-            val latLng: LatLng = map.cameraPosition.target
-            viewModel.moveMap(latLng.latitude, latLng.longitude)
+            moveMapToCurrentLocation()
         }
-        this.map?.setPadding(16, 0, 0, requireActivity().getWindowsSize().heightPixels / 2)
+    }
+
+    private fun moveMapToCurrentLocation() {
+        val latLng: LatLng? = map?.cameraPosition?.target
+        latLng?.latitude?.let { viewModel.moveMap(latLng.latitude, latLng.longitude) }
     }
 
     private fun moveMap(

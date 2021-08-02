@@ -67,7 +67,7 @@
         android:orientation="horizontal"
         android:clipToPadding="false"
         android:paddingHorizontal="8dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="@dimen/margin_big"
         app:reverseLayout="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
