@@ -53,7 +53,8 @@ dependencies {
     implementation "com.google.android.material:material:$appCompatVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
 
-    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation "com.google.android.gms:play-services-maps:$playServicesVersion"
+    implementation "com.google.android.gms:play-services-location:$playServicesVersion"
 
     //AAC
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
@@ -80,5 +81,5 @@ dependencies {
     //Picasso
     implementation "com.squareup.picasso:picasso:$picassoVersion"
 
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation "com.google.android.material:material:$materialVersion"
 }

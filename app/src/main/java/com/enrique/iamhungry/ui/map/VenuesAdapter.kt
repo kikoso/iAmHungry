@@ -20,8 +20,13 @@ class VenuesAdapter(private val onVenueSelected: (venue: VenueView) -> Unit) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(venues[position])
         holder.itemView.setOnClickListener {
-            notifyItemRemoved(position)
             onVenueSelected(venues[position])
+            venues.removeAt(position)
+
+            // Hello hacks. Calling notifyItemRemoved does not update the array. We need to call also
+            // notifyItemRangeChanged (and of course notifyItemRemoved for the nice animation)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, venues.size)
         }
     }
 
@@ -34,7 +39,7 @@ class ViewHolder(private val binding: VenueItemBinding) :
 
     fun bind(data: VenueView) {
         binding.name.text = data.name
-        binding.category.text = data.category.get(0).name
+        binding.category.text = data.category[0].name
         binding.address.text = data.location.address
         if (data.pictureUrl.isNotEmpty()) {
             Picasso.get().load(data.pictureUrl).into(binding.image)

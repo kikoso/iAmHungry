@@ -50,6 +50,12 @@ ext {
 
     // Picasso
     picassoVersion =  "2.71828"
+
+    // Material
+    materialVersion = "1.4.0"
+
+    // Play Services
+    playServicesVersion = "18.0.0"
 }
 
 task clean(type: Delete) {

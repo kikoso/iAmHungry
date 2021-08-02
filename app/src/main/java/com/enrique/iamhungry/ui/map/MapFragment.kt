@@ -1,9 +1,14 @@
 package com.enrique.iamhungry.ui.map
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +21,8 @@ import com.enrique.iamhungry.utils.Constants.DEFAULT_LATITUDE
 import com.enrique.iamhungry.utils.Constants.DEFAULT_LONGITUDE
 import com.enrique.iamhungry.utils.Constants.DEFAULT_ZOOM
 import com.enrique.iamhungry.utils.viewBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -26,6 +33,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private val binding by viewBinding(FragmentMapBinding::bind)
     private val viewModel: MapViewModel by viewModels()
     private var adapter = VenuesAdapter(::onVenueClicked)
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                getLastKnownLocation()
+            } else {
+                moveMap()
+            }
+        }
 
     private fun onVenueClicked(venue: VenueView) {
         map?.clear()
@@ -43,11 +63,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         binding.venuesRecyclerView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding.venuesRecyclerView.adapter = adapter
-
         binding.venueDetails.setOnCloseItemClickedListener { viewModel.onBackPressed() }
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
         setUpVenuesListener()
-        moveMap()
+        checkLocationPermission()
 
         activity?.onBackPressedDispatcher?.addCallback { viewModel.onBackPressed() }
     }
@@ -134,12 +155,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     private fun renderNetworkError(error: Boolean) {
         renderError(error, getString(R.string.network_error), binding.tvError)
-
     }
 
     private fun renderFeatureError(error: Boolean) {
         renderError(error, getString(R.string.general_error), binding.tvError)
-
     }
 
     private fun renderGeneralError(error: Boolean) {
@@ -163,9 +182,68 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         }
     }
 
-    private fun moveMap(latitude: Double = DEFAULT_LATITUDE, longitude: Double = DEFAULT_LONGITUDE) {
+    private fun moveMap(
+        latitude: Double = DEFAULT_LATITUDE,
+        longitude: Double = DEFAULT_LONGITUDE
+    ) {
         binding.loading.visibility = View.GONE
-        map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude),DEFAULT_ZOOM))
+        map?.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(latitude, longitude),
+                DEFAULT_ZOOM
+            )
+        )
+    }
+
+    private fun checkLocationPermission() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                getLastKnownLocation()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                // In an educational UI, explain to the user why your app requires this
+                // permission for a specific feature to behave as expected. In this UI,
+                // include a "cancel" or "no thanks" button that allows the user to
+                // continue using your app without granting the permission.
+
+            }
+            else -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            }
+        }
+    }
+
+    private fun getLastKnownLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            checkLocationPermission()
+            return
+        } else {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        map?.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    location.latitude,
+                                    location.longitude
+                                ), DEFAULT_ZOOM
+                            )
+                        )
+                    }
+                }
+        }
 
     }
 }

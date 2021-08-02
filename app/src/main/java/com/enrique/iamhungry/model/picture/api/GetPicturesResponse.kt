@@ -12,7 +12,7 @@ class GetPicturesResponse {
 
     fun getMainPictureForVenue() =
         if (response.photos.items.isNotEmpty()) {
-            response.photos.items[0].prefix + "cap100"+ response.photos.items[0].suffix
+            response.photos.items[0].prefix + "cap300"+ response.photos.items[0].suffix
         } else {
             ""
         }

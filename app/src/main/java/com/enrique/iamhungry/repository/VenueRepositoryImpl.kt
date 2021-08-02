@@ -1,6 +1,5 @@
 package com.enrique.iamhungry.repository
 
-import androidx.lifecycle.viewModelScope
 import com.enrique.iamhungry.core.Failure
 import com.enrique.iamhungry.model.venue.domain.VenueDomain
 import com.enrique.iamhungry.network.FoursquareService

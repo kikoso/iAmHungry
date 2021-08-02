@@ -11,7 +11,7 @@ import retrofit2.http.Query
 interface FoursquareApi {
 
     companion object {
-        private const val VENUES_LIMIT = 8
+        private const val VENUES_LIMIT = 5
         private const val RADIUS_LIMIT = 500
         private const val VERSION = "20210409"
         private const val FOOD_CATEGORY = "categoryId=4d4b7105d754a06374d81259"
@@ -25,6 +25,6 @@ interface FoursquareApi {
     @GET("/v2/venues/search?$REQUEST_COMMON_PARAMS&limit=$VENUES_LIMIT&$FOOD_CATEGORY&radius=$RADIUS_LIMIT")
     fun getVenues(@Query("ll") latLng: String): Call<GetVenuesResponse>
 
-    @GET("/v2/venues/{id}/photos?$REQUEST_COMMON_PARAMS&limit=$VENUES_LIMIT")
+    @GET("/v2/venues/{id}/photos?$REQUEST_COMMON_PARAMS&limit=$PICTURE_LIMIT")
     fun getPictureForVenue(@Path("id") id: String): Call<GetPicturesResponse>
 }
