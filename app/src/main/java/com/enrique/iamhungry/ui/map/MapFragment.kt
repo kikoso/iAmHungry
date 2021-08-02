@@ -120,6 +120,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             map?.clear()
             binding.venueDetails.visibility = View.GONE
             binding.centerLocationMarker.visibility = View.VISIBLE
+        } else if (it == AppState.Finish) {
+            requireActivity().finish()
         }
     }
 

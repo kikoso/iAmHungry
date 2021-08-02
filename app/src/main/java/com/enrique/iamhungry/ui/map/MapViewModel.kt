@@ -71,7 +71,12 @@ class MapViewModel @Inject constructor(private val getVenuesForLocationUseCase: 
     }
 
     fun onBackPressed() {
-        _currentState.postValue(AppState.Navigation)
+        if (_currentState.value == AppState.Exploration) {
+            _currentState.postValue(AppState.Navigation)
+        } else if (_currentState.value == AppState.Navigation) {
+            _currentState.postValue(AppState.Finish)
+        }
+
     }
 
     fun moveMap(latitude: Double, longitude: Double) {
