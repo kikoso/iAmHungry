@@ -39,6 +39,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding.venuesRecyclerView.adapter = adapter
 
+        binding.venueDetails.setOnCloseItemClickedListener { viewModel.onBackPressed() }
+
         setUpVenuesListener()
     }
 
@@ -76,6 +78,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     }
 
     private fun renderVenueDetails(venue: VenueView) {
+        binding.venueDetails.visibility = View.VISIBLE
+        binding.venueDetails.setData(venue)
         binding.centerLocationMarker.visibility = View.GONE
         addCurrentVenueMarker(venue)
     }

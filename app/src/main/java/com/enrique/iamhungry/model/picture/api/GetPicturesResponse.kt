@@ -10,7 +10,10 @@ class GetPicturesResponse {
     @SerializedName("response")
     var response: PicturesResponse = PicturesResponse()
 
-    fun getMainPictureForVenue() : String {
-        return response.photos.items[0].prefix + response.photos.items[0].suffix
-    }
+    fun getMainPictureForVenue() =
+        if (response.photos.items.isNotEmpty()) {
+            response.photos.items[0].prefix + response.photos.items[0].suffix
+        } else {
+            ""
+        }
 }

@@ -64,4 +64,8 @@ class MapViewModel @Inject constructor(private val getVenuesForLocationUseCase: 
     fun onVenueSelected(venue: VenueView) {
         _venueDetails.postValue(venue)
     }
+
+    fun onBackPressed() {
+        TODO("Not yet implemented")
+    }
 }

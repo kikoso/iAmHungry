@@ -4,6 +4,7 @@
     <dimen name="margin_half">4dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_normal">16dp</dimen>
+    <dimen name="margin_big">16dp</dimen>
     <dimen name="size_imv">50dp</dimen>
     <dimen name="text_size_24">24sp</dimen>
 </resources>

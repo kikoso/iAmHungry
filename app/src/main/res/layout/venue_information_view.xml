@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?colorPrimary">
+
+    <ImageButton
+        android:id="@+id/close"
+        android:layout_width="@dimen/margin_big"
+        android:layout_height="@dimen/margin_big"
+        android:layout_marginStart="@dimen/margin_normal"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_baseline_keyboard_backspace_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/name"
+        style="@style/TextViewName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_normal"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="?colorOnPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/close"
+        tools:text="Restaurant name" />
+
+    <TextView
+        android:id="@+id/category"
+        style="@style/TextViewCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="?colorOnPrimary"
+        app:layout_constraintStart_toStartOf="@id/close"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        tools:text="Sushi restaurant" />
+
+    <TextView
+        android:id="@+id/address"
+        style="@style/TextViewAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:paddingEnd="@dimen/margin_normal"
+        android:textColor="?colorOnPrimary"
+        app:layout_constraintStart_toStartOf="@id/category"
+        app:layout_constraintTop_toBottomOf="@id/category"
+        app:layout_constraintWidth_percent="0.5"
+        tools:text="A very long address that will be used here" />
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:background="@drawable/ic_placeholder_view"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintWidth_percent="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
