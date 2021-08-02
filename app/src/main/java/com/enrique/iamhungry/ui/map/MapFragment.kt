@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import android.view.WindowMetrics
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import com.enrique.iamhungry.model.venue.view.VenueView
 import com.enrique.iamhungry.utils.Constants.DEFAULT_LATITUDE
 import com.enrique.iamhungry.utils.Constants.DEFAULT_LONGITUDE
 import com.enrique.iamhungry.utils.Constants.DEFAULT_ZOOM
+import com.enrique.iamhungry.utils.getWindowsSize
 import com.enrique.iamhungry.utils.viewBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -182,6 +184,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             val latLng: LatLng = map.cameraPosition.target
             viewModel.moveMap(latLng.latitude, latLng.longitude)
         }
+        this.map?.setPadding(16, 0, 0, requireActivity().getWindowsSize().heightPixels / 2)
     }
 
     private fun moveMap(
