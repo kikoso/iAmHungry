@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.enrique.iamhungry.core.Failure
 import com.enrique.iamhungry.domain.venue.GetVenuesForLocationUseCase
 import com.enrique.iamhungry.core.Result
+import com.enrique.iamhungry.model.app.AppState
 import com.enrique.iamhungry.model.venue.domain.VenueDomain
 import com.enrique.iamhungry.model.venue.view.VenueView
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +34,9 @@ class MapViewModel @Inject constructor(private val getVenuesForLocationUseCase: 
 
     private val _featureError = MutableLiveData<Boolean>()
     val featureError = _featureError
+
+    private val _currentState: MutableLiveData<AppState> = MutableLiveData(AppState.Navigation)
+    val currentState: LiveData<AppState> = _currentState
 
     fun getVenues(latLng: String) {
         _loading.postValue(true)
@@ -62,10 +66,18 @@ class MapViewModel @Inject constructor(private val getVenuesForLocationUseCase: 
     }
 
     fun onVenueSelected(venue: VenueView) {
+        _currentState.postValue(AppState.Exploration)
         _venueDetails.postValue(venue)
     }
 
     fun onBackPressed() {
-        TODO("Not yet implemented")
+        _currentState.postValue(AppState.Navigation)
     }
+
+    fun moveMap(latitude: Double, longitude: Double) {
+        if (_currentState.value == AppState.Navigation) {
+            getVenues("$latitude,$longitude")
+        }
+    }
+
 }

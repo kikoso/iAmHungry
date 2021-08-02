@@ -18,7 +18,11 @@ class VenuesAdapter(private val onVenueSelected: (venue: VenueView) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(venues[position], onVenueSelected)
+        holder.bind(venues[position])
+        holder.itemView.setOnClickListener {
+            notifyItemRemoved(position)
+            onVenueSelected(venues[position])
+        }
     }
 
     override fun getItemCount(): Int = venues.size
@@ -28,16 +32,12 @@ class VenuesAdapter(private val onVenueSelected: (venue: VenueView) -> Unit) :
 class ViewHolder(private val binding: VenueItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(data: VenueView,  onVenueSelected: (venue: VenueView) -> Unit) {
+    fun bind(data: VenueView) {
         binding.name.text = data.name
         binding.category.text = data.category.get(0).name
         binding.address.text = data.location.address
         if (data.pictureUrl.isNotEmpty()) {
             Picasso.get().load(data.pictureUrl).into(binding.image)
-        }
-
-        binding.root.setOnClickListener {
-            onVenueSelected(data)
         }
     }
 }

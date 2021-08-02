@@ -3,13 +3,18 @@ package com.enrique.iamhungry.ui.map
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.enrique.iamhungry.R
 import com.enrique.iamhungry.databinding.FragmentMapBinding
+import com.enrique.iamhungry.model.app.AppState
 import com.enrique.iamhungry.model.venue.view.VenueView
+import com.enrique.iamhungry.utils.Constants.DEFAULT_LATITUDE
+import com.enrique.iamhungry.utils.Constants.DEFAULT_LONGITUDE
+import com.enrique.iamhungry.utils.Constants.DEFAULT_ZOOM
 import com.enrique.iamhungry.utils.viewBinding
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
@@ -42,9 +47,17 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         binding.venueDetails.setOnCloseItemClickedListener { viewModel.onBackPressed() }
 
         setUpVenuesListener()
+        moveMap()
+
+        activity?.onBackPressedDispatcher?.addCallback { viewModel.onBackPressed() }
     }
 
     private fun setUpVenuesListener() {
+        viewModel.currentState.observe(
+            viewLifecycleOwner, {
+                renderAppState(it)
+            }
+        )
         viewModel.loading.observe(
             viewLifecycleOwner, {
                 renderLoadingState(it)
@@ -77,10 +90,20 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         )
     }
 
+    private fun renderAppState(it: AppState?) {
+        if (it == AppState.Exploration) {
+            binding.venueDetails.visibility = View.VISIBLE
+            binding.centerLocationMarker.visibility = View.GONE
+
+        } else if (it == AppState.Navigation) {
+            map?.clear()
+            binding.venueDetails.visibility = View.GONE
+            binding.centerLocationMarker.visibility = View.VISIBLE
+        }
+    }
+
     private fun renderVenueDetails(venue: VenueView) {
-        binding.venueDetails.visibility = View.VISIBLE
         binding.venueDetails.setData(venue)
-        binding.centerLocationMarker.visibility = View.GONE
         addCurrentVenueMarker(venue)
     }
 
@@ -88,7 +111,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         map?.addMarker(
             MarkerOptions().position(venue.getLatLng())
         )
-
         map?.animateCamera(CameraUpdateFactory.newLatLng(venue.getLatLng()))
     }
 
@@ -137,7 +159,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         this.map = map
         map.setOnCameraIdleListener {
             val latLng: LatLng = map.cameraPosition.target
-            viewModel.getVenues(latLng.latitude.toString() + "," + latLng.longitude.toString())
+            viewModel.moveMap(latLng.latitude, latLng.longitude)
         }
+    }
+
+    private fun moveMap(latitude: Double = DEFAULT_LATITUDE, longitude: Double = DEFAULT_LONGITUDE) {
+        binding.loading.visibility = View.GONE
+        map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude),DEFAULT_ZOOM))
+
     }
 }
