@@ -77,6 +77,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineVersion"
     testImplementation "androidx.arch.core:core-testing:$archCoreTestVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "io.mockk:mockk:$mockkVersion"
 
     //Picasso
     implementation "com.squareup.picasso:picasso:$picassoVersion"
