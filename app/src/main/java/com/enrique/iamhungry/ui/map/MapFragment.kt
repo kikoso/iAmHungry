@@ -1,10 +1,11 @@
 package com.enrique.iamhungry.ui.map
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.view.WindowMetrics
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,14 +22,17 @@ import com.enrique.iamhungry.model.venue.view.VenueView
 import com.enrique.iamhungry.utils.Constants.DEFAULT_LATITUDE
 import com.enrique.iamhungry.utils.Constants.DEFAULT_LONGITUDE
 import com.enrique.iamhungry.utils.Constants.DEFAULT_ZOOM
-import com.enrique.iamhungry.utils.getWindowsSize
 import com.enrique.iamhungry.utils.viewBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
@@ -115,11 +119,27 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     private fun renderAppState(it: AppState?) {
         if (it == AppState.Exploration) {
-            binding.venueDetails.visibility = View.VISIBLE
+            binding.venueDetails.animate()
+                .translationY(0f)
+                .alpha(0.0f)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        binding.venueDetails.visibility = View.VISIBLE
+                    }
+                })
             binding.centerLocationMarker.visibility = View.GONE
         } else if (it == AppState.Navigation) {
             map?.clear()
-            binding.venueDetails.visibility = View.GONE
+            binding.venueDetails.animate()
+                .translationY(0f)
+                .alpha(1.0f)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        binding.venueDetails.visibility = View.GONE
+                    }
+                })
             binding.centerLocationMarker.visibility = View.VISIBLE
             moveMapToCurrentLocation()
         } else if (it == AppState.Finish) {
