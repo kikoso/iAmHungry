@@ -121,7 +121,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         if (it == AppState.Exploration) {
             binding.venueDetails.animate()
                 .translationY(0f)
-                .alpha(0.0f)
+                .alpha(1.0f)
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator) {
                         super.onAnimationEnd(animation)
