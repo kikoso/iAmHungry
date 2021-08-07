@@ -28,7 +28,9 @@ class VenueInformationView constructor(context: Context, attrs: AttributeSet?) :
         binding.category.text = venue.category[0].name
         binding.name.text = venue.name
         if (venue.pictureUrl.isNotEmpty()) {
-            Picasso.get().load(venue.pictureUrl).into(binding.image)
+            Picasso.get().load(venue.pictureUrl).placeholder(R.drawable.ic_placeholder_view).into(binding.image)
+        } else {
+            binding.image.setImageResource(R.drawable.ic_placeholder_view)
         }
     }
 }
